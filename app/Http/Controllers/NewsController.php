@@ -18,21 +18,24 @@ class NewsController extends Controller
     {
         //FITUR BARU
 
-        // Ambil kata kunci dari query string
-        $search = $request->query('search');
-
-        // Query berita dengan filter pencarian
         $query = News::query();
- 
-        if ($search) {
-            $query->where('title', 'like', "%{$search}%")
-                ->orWhere('content', 'like', "%{$search}%");
-        }
 
+        // Jika ada parameter pencarian
+        if ($request->has('search')) {
+            $searchQuery = $request->search;
+            $query->where(function ($q) use ($searchQuery) {
+                $q->where('title', 'LIKE', "%{$searchQuery}%")
+                    ->orWhere('description', 'LIKE', "%{$searchQuery}%");
+            });
+        }
         //END FITUR BARU
 
         // $news = new NewsCollection(News::OrderByDesc('id')->paginate(6));
-        $news = new NewsCollection(News::orderBy('updated_at', 'desc')->paginate(6)->withQueryString());
+        $news = new NewsCollection(
+            $query->orderBy('updated_at', 'desc')
+                ->paginate(6)
+                ->withQueryString()
+    );
 
         //Transformasi data untuk menambahkan image dan tanggal
         $news->getCollection()->transform(function ($item) {
@@ -117,6 +120,19 @@ class NewsController extends Controller
 
     public function Show(News $news)
     {
+        $otherNews = News::where('id', '!=', $news->id)
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'title' => $item->title,
+                    'description' => $item->description,
+                    'image' => $item->image ? asset('storage/' . $item->image) : null,
+                ];
+            });
+
         return Inertia::render('NewsDetail', [
             'news' => [
                 'id' => $news->id,
@@ -126,6 +142,7 @@ class NewsController extends Controller
                 'author' => $news->author,
                 'image' => $news->image ? asset('storage/' . $news->image) : null,
             ],
+            'otherNews' => $otherNews,
         ]);
     }
 

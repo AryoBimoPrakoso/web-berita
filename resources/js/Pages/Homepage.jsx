@@ -5,8 +5,28 @@ import NewsList from "@/Components/Homepage/NewsList";
 import Paginator from "@/Components/Homepage/Paginator";
 import { data } from "autoprefixer";
 
-export default function Homepage(props) {
-    console.log("data berita : ", props);
+export default function Homepage(props, filters) {
+    // console.log("data berita : ", props);
+    const [searchQuery, setSearchQuery] = useState(filters.search || '');
+
+    //handle pencarian
+    const handleSearch = (e) => {
+        const query = e.target.value;
+        setSearchQuery(query);
+
+        router.get(
+            "/",
+            {
+                search: query,
+            },
+            {
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            }
+        );
+    };
+
     return (
         <div className="min-h-screen bg-slate-100">
             <Head title={props.title} />
@@ -16,6 +36,27 @@ export default function Homepage(props) {
                     MusicNews
                 </a>
             </div>
+
+            {/* KOLOM PENCARIAN */}
+            <div className="flex-1 justify-center mt-4">
+                <div className="form-control w-full max-w-lg mx-auto">
+                    <input
+                        type="text"
+                        placeholder="Cari berita..."
+                        className="input text-black bg-white input-bordered w-full"
+                        value={searchQuery}
+                        onChange={handleSearch}
+                    />
+                </div>
+            </div>
+
+            {/* MENAMPILKAN HASIL PENCARIAN */}
+            {searchQuery && (
+                <div className="text-center py-4 text-gray-600">
+                    Menampilkan hasil pencarian untuk: "{searchQuery}"
+                </div>
+            )}
+
 
             {/* Daftar Berita */}
             <div
@@ -107,10 +148,7 @@ export default function Homepage(props) {
                         <br />
                         Delivering reliable and current news since 2025.
                     </p>
-                    <p>
-                        Copyright © 2025 - All right
-                        reserved
-                    </p>
+                    <p>Copyright © 2025 - All right reserved</p>
                 </aside>
             </footer>
         </div>
