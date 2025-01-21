@@ -1,6 +1,7 @@
 // Resources/js/Components/Homepage/NewsDetail.jsx
 import React from "react";
 import { Head, Link } from "@inertiajs/react";
+import { data } from "autoprefixer";
 
 const NewsDetail = ({ news, otherNews = [] }) => {
     return (
@@ -15,9 +16,25 @@ const NewsDetail = ({ news, otherNews = [] }) => {
 
             <div className="min-h-screen flex flex-row bg-slate-50">
                 <div className="basis-3/4">
-                    <h1 className="text-2xl font-bold text-black p-4">
+                    <h1 className="text-2xl font-bold text-black mt-4 ml-4">
                         {news.title}
                     </h1>
+                    <div>
+                        <p className="text-sm text-gray-500 px-4">
+                            {news.date_label}
+                            <span className="font-medium">
+                                {news.display_date}
+                            </span>
+                        </p>
+                        <p className="text-sm text-gray-500 px-4">
+                            {news.author}
+                        </p>
+                        <div className="border-2 rounded-xl w-fit m-4">
+                            <p className="text-start px-4 py-0.5 text-sm text-gray-500">
+                                {news.category}
+                            </p>
+                        </div>
+                    </div>
                     <div className="flex justify-center">
                         <img
                             src={news.image}

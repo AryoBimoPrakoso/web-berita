@@ -18,22 +18,29 @@ const isNews = (news) => {
                     </div>
                 )}
             </figure>
-            <div className="card-body">
-                <h2 className="card-title">
-                    {data.title}
-                    {data.isNew && (
-                        <div className="badge badge-secondary ml-2">NEW</div>
-                    )}
-                </h2>
-                <p>{data.description?.substring(0, 50)}...</p>
-                <Link href={route('news.show', { news: data.id })}>
-                    <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold btn-sm rounded mt-2">
+            <div className="card-body hover:shadow-lg rounded-xl">
+                <Link href={route("news.show", { news: data.id })}>
+                    <h2 className="card-title hover:text-blue-600">
+                        {data.title?.substring(0, 50)}...
+                        {data.isNew && (
+                            <div className="badge badge-secondary ml-2">
+                                NEW
+                            </div>
+                        )}
+                    </h2>
+                    {/* <button className="bg-gray-500 hover:bg-gray-700 text-white font-bold btn-sm rounded mt-2">
                         Lihat Berita
-                    </button>
+                    </button> */}
                 </Link>
-                <div className="mt-4 text-sm text-gray-500 flex">
-                    <p>{data.display_date}</p>
-                    <p className="text-end">{data.author}</p>
+                <p>{data.description?.substring(0, 50)}...</p>
+                <div className="flex w-full justify-between items-center">
+                    <div className="text-sm flex flex-col text-gray-500">
+                        <p>{data.display_date}</p>
+                        <p>Oleh : {data.author}</p>
+                    </div>
+                    <div className="border-2 rounded-xl ">
+                        <h2 className="text-end text-sm px-4 py-0.5 items-center text-gray-500">{data.category}</h2>
+                    </div>
                 </div>
             </div>
         </div>
@@ -44,7 +51,9 @@ const isNews = (news) => {
 const noNews = () => {
     return (
         <div className="text-center text-gray-500 mt-8">
-            <h3 className="text-xl font-semibold">Saat Ini Tidak Ada Berita!</h3>
+            <h3 className="text-xl font-semibold">
+                Saat Ini Tidak Ada Berita!
+            </h3>
             <p>Coba kata kunci pencarian yang lain atau kembali nanti.</p>
         </div>
     );

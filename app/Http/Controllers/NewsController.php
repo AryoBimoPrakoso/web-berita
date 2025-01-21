@@ -35,7 +35,7 @@ class NewsController extends Controller
             $query->orderBy('updated_at', 'desc')
                 ->paginate(6)
                 ->withQueryString()
-    );
+        );
 
         //Transformasi data untuk menambahkan image dan tanggal
         $news->getCollection()->transform(function ($item) {
@@ -104,6 +104,17 @@ class NewsController extends Controller
      */
     public function adminNews(News $news)
     {
+        // $query = $news::where('author', auth()->user()->email);
+
+        // // Tambahkan pencarian jika ada parameter search
+        // if ($request->has('search')) {
+        //     $searchTerm = $request->search;
+        //     $query->where(function($q) use ($searchTerm) {
+        //         $q->where('title', 'LIKE', "%{$searchTerm}%")
+        //           ->orWhere('description', 'LIKE', "%{$searchTerm}%")
+        //           ->orWhere('category', 'LIKE', "%{$searchTerm}%");
+        //     });
+        // }
 
         $myNews = $news::where('author', auth()->user()->email)
             ->orderby('updated_at', 'desc')
@@ -133,15 +144,23 @@ class NewsController extends Controller
                 ];
             });
 
+        $newsData = [
+            'id' => $news->id,
+            'title' => $news->title,
+            'description' => $news->description,
+            'category' => $news->category,
+            'author' => $news->author,
+            'image' => $news->image ? asset('storage/' . $news->image) : null,
+            'display_date' => $news->updated_at->eq($news->created_at)
+                ? $news->created_at->format('d-M-y H:i:s')
+                : $news->updated_at->format('d-M-y H:i:s'),
+            'date_label' => $news->updated_at->eq($news->created_at)
+                ? 'Dibuat pada '
+                : 'Telah diperbarui pada ',
+        ];
+
         return Inertia::render('NewsDetail', [
-            'news' => [
-                'id' => $news->id,
-                'title' => $news->title,
-                'description' => $news->description,
-                'category' => $news->category,
-                'author' => $news->author,
-                'image' => $news->image ? asset('storage/' . $news->image) : null,
-            ],
+            'news' => $newsData,
             'otherNews' => $otherNews,
         ]);
     }

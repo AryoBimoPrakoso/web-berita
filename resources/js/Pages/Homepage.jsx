@@ -3,13 +3,10 @@ import { Link, Head, router } from "@inertiajs/react";
 import Navbar from "@/Components/Navbar";
 import NewsList from "@/Components/Homepage/NewsList";
 import Paginator from "@/Components/Homepage/Paginator";
-import { data } from "autoprefixer";
 
 export default function Homepage(props, filters) {
-    // console.log("data berita : ", props);
-    const [searchQuery, setSearchQuery] = useState(filters.search || '');
+    const [searchQuery, setSearchQuery] = useState(filters.search || "");
 
-    //handle pencarian
     const handleSearch = (e) => {
         const query = e.target.value;
         setSearchQuery(query);
@@ -27,6 +24,15 @@ export default function Homepage(props, filters) {
         );
     };
 
+    // Group news by category
+    const groupedNews = props.news.data?.reduce((acc, news) => {
+        if (!acc[news.category]) {
+            acc[news.category] = [];
+        }
+        acc[news.category].push(news);
+        return acc;
+    }, {});
+
     return (
         <div className="min-h-screen bg-slate-100">
             <Head title={props.title} />
@@ -35,48 +41,60 @@ export default function Homepage(props, filters) {
                 <a className="btn btn-ghost text-xl" href={"/"}>
                     MusicNews
                 </a>
-            </div>
-
-            {/* KOLOM PENCARIAN */}
-            <div className="flex-1 justify-center mt-4">
-                <div className="form-control w-full max-w-lg mx-auto">
-                    <input
-                        type="text"
-                        placeholder="Cari berita..."
-                        className="input text-black bg-white input-bordered w-full"
-                        value={searchQuery}
-                        onChange={handleSearch}
-                    />
+                <div className="flex-1 justify-center">
+                    <div className="form-control w-full max-w-lg mx-auto">
+                        <input
+                            type="text"
+                            placeholder="Cari berita..."
+                            className="input input-sm text-black bg-white input-bordered w-full"
+                            value={searchQuery}
+                            onChange={handleSearch}
+                        />
+                    </div>
                 </div>
             </div>
 
-            {/* MENAMPILKAN HASIL PENCARIAN */}
+            {/* Search Results Notification */}
             {searchQuery && (
                 <div className="text-center py-4 text-gray-600">
                     Menampilkan hasil pencarian untuk: "{searchQuery}"
                 </div>
             )}
 
+            {/* Main Content */}
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <h2 className="text-black text-2xl font-bold my-6 text-center">
+                    Daftar Berita
+                </h2>
 
-            {/* Daftar Berita */}
-            <div
-                className="flex justify-center flex-col lg:flex-row lg:flex-wrap 
-            lg:items-stretch item-center gap-4 p-4 text-black"
-            >
-                {props.news.data && props.news.data.length > 0 ? (
-                    <NewsList news={props.news.data} />
-                ) : (
-                    <div className="text-center text-black">
-                        Saat ini tidak ada berita!
-                    </div>
-                )}
+                {/* News Categories */}
+                <div className="space-y-8">
+                    {groupedNews && Object.keys(groupedNews).length > 0 ? (
+                        Object.entries(groupedNews).map(([category, newsItems]) => (
+                            <div key={category} className="p-6">
+                                <h3 className="text-lg font-semibold text-black mb-4">
+                                    {category || 'Uncategorized'}
+                                </h3>
+                                <div className="flex justify-center flex-col lg:flex-row lg:flex-wrap lg:items-stretch gap-4">
+                                    <NewsList news={newsItems} />
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="text-center text-black">
+                            Saat ini tidak ada berita!
+                        </div>
+                    )}
+                </div>
+
+                {/* Pagination */}
+                <div className="flex justify-center items-center py-10">
+                    <Paginator meta={props.news.meta} />
+                </div>
             </div>
 
-            {/* Paginator */}
-            <div className="flex justify-center items-center pb-10">
-                <Paginator meta={props.news.meta} />
-            </div>
-            <footer class="footer footer-center bg-white text-black p-10">
+            {/* Footer */}
+            <footer className="footer footer-center bg-white text-black p-10">
                 <aside>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -94,8 +112,8 @@ export default function Homepage(props, filters) {
                             y2="26"
                             gradientUnits="userSpaceOnUse"
                         >
-                            <stop offset="0" stop-color="#3537b0"></stop>
-                            <stop offset="1" stop-color="#4646cf"></stop>
+                            <stop offset="0" stopColor="#3537b0"></stop>
+                            <stop offset="1" stopColor="#4646cf"></stop>
                         </linearGradient>
                         <path
                             fill="url(#eo9Iz~gJX5QQxF9vIcujya_W5To6Q3gjDiK_gr1)"
@@ -103,47 +121,29 @@ export default function Homepage(props, filters) {
                         ></path>
                         <path
                             fill="#5286ff"
-                            d="M41,39V9c0-1.105-0.895-2-2-2H5C3.895,7,3,7.895,3,9v30c0,1.105,0.895,2,2,2h38	C41.895,41,41,40.105,41,39z"
+                            d="M41,39V9c0-1.105-0.895-2-2-2H5C3.895,7,3,7.895,3,9v30c0,1.105,0.895,2,2,2h38 C41.895,41,41,40.105,41,39z"
                         ></path>
                         <path
                             fill="#fff"
-                            d="M37,17H7c-0.552,0-1-0.448-1-1v-2c0-0.552,0.448-1,1-1h30c0.552,0,1,0.448,1,1v2	C38,16.552,37.552,17,37,17z"
+                            d="M37,17H7c-0.552,0-1-0.448-1-1v-2c0-0.552,0.448-1,1-1h30c0.552,0,1,0.448,1,1v2 C38,16.552,37.552,17,37,17z"
                         ></path>
                         <path
                             fill="#fff"
-                            d="M19,36H7c-0.552,0-1-0.448-1-1V22c0-0.552,0.448-1,1-1h12c0.552,0,1,0.448,1,1v13	C20,35.552,19.552,36,19,36z"
+                            d="M19,36H7c-0.552,0-1-0.448-1-1V22c0-0.552,0.448-1,1-1h12c0.552,0,1,0.448,1,1v13 C20,35.552,19.552,36,19,36z"
                         ></path>
                         <path
                             fill="#fff"
                             d="M38,24H24v-2c0-0.552,0.448-1,1-1h12c0.552,0,1,0.448,1,1V24z"
                         ></path>
-                        <rect
-                            width="14"
-                            height="3"
-                            x="24"
-                            y="24"
-                            fill="#e6eeff"
-                        ></rect>
-                        <rect
-                            width="14"
-                            height="3"
-                            x="24"
-                            y="27"
-                            fill="#ccdcff"
-                        ></rect>
-                        <rect
-                            width="14"
-                            height="3"
-                            x="24"
-                            y="30"
-                            fill="#b3cbff"
-                        ></rect>
+                        <rect width="14" height="3" x="24" y="24" fill="#e6eeff"></rect>
+                        <rect width="14" height="3" x="24" y="27" fill="#ccdcff"></rect>
+                        <rect width="14" height="3" x="24" y="30" fill="#b3cbff"></rect>
                         <path
                             fill="#9abaff"
                             d="M37,36H25c-0.552,0-1-0.448-1-1v-2h14v2C38,35.552,37.552,36,37,36z"
                         ></path>
                     </svg>
-                    <p class="font-bold">
+                    <p className="font-bold">
                         MusicNews
                         <br />
                         Delivering reliable and current news since 2025.
