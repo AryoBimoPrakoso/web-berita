@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { Link, Head, router } from "@inertiajs/react";
-import Navbar from "@/Components/Navbar";
 import NewsList from "@/Components/Homepage/NewsList";
-import Paginator from "@/Components/Homepage/Paginator";
 
-export default function Homepage(props, filters) {
-    const [searchQuery, setSearchQuery] = useState(filters.search || "");
+export default function Homepage(props) {
+    const [searchQuery, setSearchQuery] = useState(props.filters?.search || "");
 
     const handleSearch = (e) => {
         const query = e.target.value;
@@ -13,9 +11,7 @@ export default function Homepage(props, filters) {
 
         router.get(
             "/",
-            {
-                search: query,
-            },
+            { search: query },
             {
                 preserveScroll: true,
                 preserveState: true,
@@ -24,24 +20,55 @@ export default function Homepage(props, filters) {
         );
     };
 
-    // Group news by category
-    const groupedNews = props.news.data?.reduce((acc, news) => {
-        if (!acc[news.category]) {
-            acc[news.category] = [];
-        }
-        acc[news.category].push(news);
-        return acc;
-    }, {});
-
     return (
         <div className="min-h-screen bg-slate-100">
             <Head title={props.title} />
 
             <div className="navbar sticky top-0 z-10 bg-white text-black shadow-xl">
                 <a className="btn btn-ghost text-xl" href={"/"}>
-                    MusicNews
+                    AryoNews
                 </a>
                 <div className="flex-1 justify-center">
+                    <div>
+                        <ul className="flex flex-row gap-4 ml-2">
+                            <Link
+                                href={route("category.news", {
+                                    category: "Hiburan",
+                                })}
+                            >
+                                <li className="p-2 hover:text-blue-500 rounded-md">
+                                    Hiburan
+                                </li>
+                            </Link>
+                            <Link
+                                href={route("category.news", {
+                                    category: "Olahraga",
+                                })}
+                            >
+                                <li className="p-2 hover:text-blue-500 rounded-md">
+                                    Olahraga
+                                </li>
+                            </Link>
+                            <Link
+                                href={route("category.news", {
+                                    category: "Musik",
+                                })}
+                            >
+                                <li className="p-2 hover:text-blue-500 rounded-md">
+                                    Musik
+                                </li>
+                            </Link>
+                            <Link
+                                href={route("category.news", {
+                                    category: "Politik",
+                                })}
+                            >
+                                <li className="p-2 hover:text-blue-500 rounded-md">
+                                    Politik
+                                </li>
+                            </Link>
+                        </ul>
+                    </div>
                     <div className="form-control w-full max-w-lg mx-auto">
                         <input
                             type="text"
@@ -54,44 +81,54 @@ export default function Homepage(props, filters) {
                 </div>
             </div>
 
-            {/* Search Results Notification */}
-            {searchQuery && (
-                <div className="text-center py-4 text-gray-600">
-                    Menampilkan hasil pencarian untuk: "{searchQuery}"
-                </div>
-            )}
-
-            {/* Main Content */}
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <h2 className="text-black text-2xl font-bold my-6 text-center">
-                    Daftar Berita
-                </h2>
-
-                {/* News Categories */}
-                <div className="space-y-8">
-                    {groupedNews && Object.keys(groupedNews).length > 0 ? (
-                        Object.entries(groupedNews).map(([category, newsItems]) => (
-                            <div key={category} className="p-6">
-                                <h3 className="text-lg font-semibold text-black mb-4">
-                                    {category || 'Uncategorized'}
-                                </h3>
-                                <div className="flex justify-center flex-col lg:flex-row lg:flex-wrap lg:items-stretch gap-4">
-                                    <NewsList news={newsItems} />
-                                </div>
-                            </div>
-                        ))
+            {props.hasSearch && (
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    <div className="text-center py-4 text-gray-600">
+                        Menampilkan hasil pencarian untuk: "{searchQuery}"
+                    </div>
+                    {props.latestNews.length > 0 ? (
+                        <NewsList news={props.latestNews} />
                     ) : (
-                        <div className="text-center text-black">
-                            Saat ini tidak ada berita!
+                        <div className="text-center text-gray-500 py-8">
+                            Tidak ditemukan berita untuk pencarian "
+                            {searchQuery}"
                         </div>
                     )}
                 </div>
+            )}
 
-                {/* Pagination */}
-                <div className="flex justify-center items-center py-10">
-                    <Paginator meta={props.news.meta} />
+            {/* Show regular sections only when not searching */}
+            {!props.hasSearch && (
+                <div className="w-full px-4 sm:px-6 lg:px-8">
+                    {/* Trending News Section */}
+                    <section className="mb-8 pt-4">
+                        <h2 className="text-black text-2xl font-bold mb-4">
+                            Berita Trending
+                        </h2>
+                        {props.trendingNews && props.trendingNews.length > 0 ? (
+                            <NewsList news={props.trendingNews} />
+                        ) : (
+                            <div className="text-center text-gray-500">
+                                Tidak ada berita trending
+                            </div>
+                        )}
+                    </section>
+
+                    {/* Latest News Section */}
+                    <section className="mb-8">
+                        <h2 className="text-black text-2xl font-bold mt-6 mb-4">
+                            Berita Terbaru
+                        </h2>
+                        {props.latestNews && props.latestNews.length > 0 ? (
+                            <NewsList news={props.latestNews} />
+                        ) : (
+                            <div className="text-center text-gray-500">
+                                Tidak ada berita terbaru
+                            </div>
+                        )}
+                    </section>
                 </div>
-            </div>
+            )}
 
             {/* Footer */}
             <footer className="footer footer-center bg-white text-black p-10">
@@ -104,47 +141,10 @@ export default function Homepage(props, filters) {
                         height="48"
                         viewBox="0 0 48 48"
                     >
-                        <linearGradient
-                            id="eo9Iz~gJX5QQxF9vIcujya_W5To6Q3gjDiK_gr1"
-                            x1="41.018"
-                            x2="45.176"
-                            y1="26"
-                            y2="26"
-                            gradientUnits="userSpaceOnUse"
-                        >
-                            <stop offset="0" stopColor="#3537b0"></stop>
-                            <stop offset="1" stopColor="#4646cf"></stop>
-                        </linearGradient>
-                        <path
-                            fill="url(#eo9Iz~gJX5QQxF9vIcujya_W5To6Q3gjDiK_gr1)"
-                            d="M43,11h-3v30h3c1.105,0,2-0.895,2-2V13C45,11.895,44.105,11,43,11z"
-                        ></path>
-                        <path
-                            fill="#5286ff"
-                            d="M41,39V9c0-1.105-0.895-2-2-2H5C3.895,7,3,7.895,3,9v30c0,1.105,0.895,2,2,2h38 C41.895,41,41,40.105,41,39z"
-                        ></path>
-                        <path
-                            fill="#fff"
-                            d="M37,17H7c-0.552,0-1-0.448-1-1v-2c0-0.552,0.448-1,1-1h30c0.552,0,1,0.448,1,1v2 C38,16.552,37.552,17,37,17z"
-                        ></path>
-                        <path
-                            fill="#fff"
-                            d="M19,36H7c-0.552,0-1-0.448-1-1V22c0-0.552,0.448-1,1-1h12c0.552,0,1,0.448,1,1v13 C20,35.552,19.552,36,19,36z"
-                        ></path>
-                        <path
-                            fill="#fff"
-                            d="M38,24H24v-2c0-0.552,0.448-1,1-1h12c0.552,0,1,0.448,1,1V24z"
-                        ></path>
-                        <rect width="14" height="3" x="24" y="24" fill="#e6eeff"></rect>
-                        <rect width="14" height="3" x="24" y="27" fill="#ccdcff"></rect>
-                        <rect width="14" height="3" x="24" y="30" fill="#b3cbff"></rect>
-                        <path
-                            fill="#9abaff"
-                            d="M37,36H25c-0.552,0-1-0.448-1-1v-2h14v2C38,35.552,37.552,36,37,36z"
-                        ></path>
+                        {/* SVG path content */}
                     </svg>
                     <p className="font-bold">
-                        MusicNews
+                        AryoNews
                         <br />
                         Delivering reliable and current news since 2025.
                     </p>

@@ -10,12 +10,20 @@ class News extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'content'];
+    protected $fillable = [
+        'title',
+        'description',
+        'category',
+        'author',
+        'image',
+        'views'
+    ];
 
     protected $appends = ['isNews'];
 
 
-    public function getIsNewsAttribute() {
+    public function getIsNewsAttribute()
+    {
         return Carbon::parse($this->updated_at)->gt(Carbon::now()->subHour());
     }
 }

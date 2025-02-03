@@ -8,7 +8,7 @@ const NewsDetail = ({ news, otherNews = [] }) => {
         <div>
             <div class="navbar sticky top-0 z-10 bg-white text-black shadow-xl">
                 <a href={"/"} class="btn btn-ghost text-xl">
-                    MusicNews
+                    AryoNews
                 </a>
             </div>
 

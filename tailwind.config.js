@@ -22,7 +22,7 @@ export default {
             //         '66%': { transform: 'translateX(-200%)' },
             //         '100%': { transform: 'translateX(-300%)' },
             //     },
-            // },
+            // },   
             // animation: {
             //     slide: 'slide 12s alternate',
             // },

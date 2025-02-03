@@ -14,6 +14,9 @@ Route::get('/news/edit', [NewsController::class, 'edit'])->middleware(['auth', '
 Route::post('/news/update', [NewsController::class, 'update'])->middleware(['auth', 'verified'])->name('update.news');;
 Route::post('/news/delete', [NewsController::class, 'destroy'])->middleware(['auth', 'verified'])->name('delete.news');;
 Route::get('/news/{news}', [NewsController::class, 'show'])->name('news.show');
+Route::get('/admin/news/{news}', [NewsController::class, 'adminShow'])->name('admin.news.show');
+Route::get('/category/{category}', [NewsController::class, 'categoryNews'])->name('category.news');
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
